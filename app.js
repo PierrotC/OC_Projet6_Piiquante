@@ -1,8 +1,11 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
+const path = require('path');
 
+const auth = require('./middleware/auth');
 const userRoutes = require('./routes/user');
+const sauceRoutes = require('./routes/sauces');
 
 const app = express();
 mongoose.connect('mongodb+srv://PierrotC:ky8DtCSUG1dZv5LQ@cluster0.n0f7a.mongodb.net/?retryWrites=true&w=majority',
@@ -22,6 +25,8 @@ app.use((req, res, next) => {
     next();
   });
 
+app.use('/images', express.static(path.join(__dirname, 'images')));
 app.use('/api/auth', userRoutes);
+app.use('/api/sauces', auth, sauceRoutes);
 
 module.exports = app;
