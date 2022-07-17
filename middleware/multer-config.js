@@ -17,7 +17,7 @@ const storage = multer.diskStorage({
         if(!ext) {
             cb(null, false);
         } else {
-            cb(null, `name${ Date.now() }.${ ext }`);
+            cb(null, name + Date.now() + '.' + ext);
         };
     }
 });
