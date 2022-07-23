@@ -11,16 +11,19 @@ const storage = multer.diskStorage({
         cb(null, 'images');
     },
     filename: (req, file, cb) => {
-        const name = file.originalname.split(' ').join('_');
+        const name = file.originalname.split(/[ .]/g);
+        name.splice(-1, 1);
+
+        
         const ext = MIME_TYPES[file.mimetype];
 
-        cb(null, name + Date.now() + '.' + ext);
+        // cb(null, name.join('_') + '_' + Date.now() + '.' + ext);
         
-        // if(!ext) {
-        //     cb(null, false);
-        // } else {
-        //     cb(null, name + Date.now() + '.' + ext);
-        // };
+        if(!ext) {
+            cb(null, false);
+        } else {
+            cb(null, name.join('_') + '_' + Date.now() + '.' + ext);
+        };
     }
 });
 
