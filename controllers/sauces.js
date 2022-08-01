@@ -48,12 +48,18 @@ exports.updateSauce = (req, res, next) => {
             if(sauce.userId != req.auth.userId) {
                 res.status(401).json({ message: 'Unauthorized' });
             } else {
-                const imgName = sauce.imageUrl.split('/images/')[1];
-                fs.unlink(`images/${ imgName }`, () => {
+                if(req.file) {
+                    const imgName = sauce.imageUrl.split('/images/')[1];
+                    fs.unlink(`images/${ imgName }`, () => {
+                        Sauce.updateOne({ _id: req.params.id }, { ...objectSauce, _id: req.params.id})
+                        .then(() => res.status(200).json({ message: 'Sauce updated with image' }))
+                        .catch(error => res.status(400).json({ error }));
+                    })
+                } else {
                     Sauce.updateOne({ _id: req.params.id }, { ...objectSauce, _id: req.params.id})
-                    .then(() => res.status(200).json({ message: 'Sauce updated' }))
-                    .catch(error => res.status(400).json({ error }));
-                })
+                        .then(() => res.status(200).json({ message: 'Sauce updated' }))
+                        .catch(error => res.status(400).json({ error }));
+                }
             }
         })
         .catch(error => res.status(404).json({ error }));
