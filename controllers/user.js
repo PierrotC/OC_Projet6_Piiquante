@@ -31,9 +31,28 @@ exports.login = (req, res, next) => {
 };
 
 exports.signup = (req, res, next) => {
-    
-    
-    bcrypt.hash(req.body.password, 10)
+    function passwordIsStrong(password) {
+        const caps = /[A-Z]/g;
+        const lower = /[a-z]/g;
+        const number = /[1-9]/g;
+        const special = /[ !"#$%&'()*+,-./:;<=>?@[\]^_`{|}~]/g;
+
+        if(caps.test(password)) {
+            if(lower.test(password)) {
+                if(number.test(password)) {
+                    if(special.test(password)) {
+                        return true;
+                    }
+                }
+            }
+        } else {
+            return false;
+        }
+    };
+    if(!passwordIsStrong(req.body.password)) {
+        res.status(400).json({ message: 'The password is not secure enough' });
+    } else {
+        bcrypt.hash(req.body.password, 10)
         .then(hash => {
             const user = new User ({
                 email: req.body.email,
@@ -44,4 +63,5 @@ exports.signup = (req, res, next) => {
                 .catch(error => res.status(400).json({ error }));
         })
         .catch(error => res.status(500).json({ error }));
+    }
 };
