@@ -1,6 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
+const helmet = require('helmet');
 const path = require('path');
 
 const auth = require('./middleware/auth');
@@ -18,6 +19,9 @@ mongoose.connect('mongodb+srv://PierrotC:ky8DtCSUG1dZv5LQ@cluster0.n0f7a.mongodb
 .catch(() => console.log('Failed to connect to MongoDB...'));
 
 app.use(bodyParser.json());
+app.use(helmet({
+    crossOriginResourcePolicy: false
+}));
 
 app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
