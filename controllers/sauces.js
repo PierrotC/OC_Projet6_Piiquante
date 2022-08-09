@@ -1,5 +1,6 @@
 const Sauce = require('../models/sauce');
 const fs = require('fs');
+const { rejects } = require('assert');
 
 exports.getAllSauces = (req, res, next) => {
     Sauce.find()
@@ -89,13 +90,7 @@ exports.likeSauce = (req, res, next) => {
 
     Sauce.findOne({ _id: req.params.id })
         .then((sauce) => {
-            if(likeValue == 1) {
-                sauce.likes++;
-                sauce.usersLiked.push(userId);
-            } else if(likeValue == -1) {
-                sauce.dislikes++;
-                sauce.usersDisliked.push(userId);
-            } else if(likeValue == 0) {
+            if(likeValue == 0) {
                 if(sauce.usersLiked.includes(userId)) {
                     sauce.usersLiked.splice(sauce.usersLiked.indexOf(userId), 1);
                     sauce.likes--;
@@ -103,11 +98,26 @@ exports.likeSauce = (req, res, next) => {
                     sauce.usersDisliked.splice(sauce.usersDisliked.indexOf(userId), 1);
                     sauce.dislikes--;
                 }
+                sauce.save()
+                    .then(() => res.status(200).json({ message: 'Like/dislike removed' }))
+                    .catch(error => res.status(400).json({ error }));
+            } else {
+                if (sauce.usersLiked.includes(userId) || sauce.usersDisliked.includes(userId)) {
+                    res.status(401).json({message: 'You already did that'});
+                } else {
+                    if(likeValue == 1) {
+                        sauce.likes++;
+                        sauce.usersLiked.push(userId);
+                    } else if(likeValue == -1) {
+                        sauce.dislikes++;
+                        sauce.usersDisliked.push(userId);
+                    }
+            
+                sauce.save()
+                    .then(() => res.status(200).json({ message: 'Like/dislike saved' }))
+                    .catch(error => res.status(400).json({ error }));
+                }
             }
-
-            sauce.save()
-                .then(() => res.status(200).json({ message: 'Like/dislike savec' }))
-                .catch(error => res.status(400).json({ error }));
         })
         .catch(error => res.status(404).json({ error }));
 };

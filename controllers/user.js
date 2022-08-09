@@ -1,7 +1,8 @@
 const User = require ('../models/user');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-
+require('dotenv').config();
+const sign = process.env.SIGN;
 
 exports.login = (req, res, next) => {
     User.findOne({ email: req.body.email })
@@ -18,7 +19,7 @@ exports.login = (req, res, next) => {
                                 userId: user._id,
                                 token: jwt.sign(
                                     { userId: user._id},
-                                    'soSe_CreT27_TO_k2E8n_aWSm_',
+                                    sign,
                                     { expiresIn: '12h' }
                                 )
                             });

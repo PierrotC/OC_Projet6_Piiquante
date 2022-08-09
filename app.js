@@ -1,8 +1,9 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const bodyParser = require('body-parser');
 const helmet = require('helmet');
 const path = require('path');
+require('dotenv').config();
+const URI = process.env.MONGO_URI;
 
 const auth = require('./middleware/auth');
 const userRoutes = require('./routes/user');
@@ -10,7 +11,7 @@ const sauceRoutes = require('./routes/sauces');
 
 const app = express();
 
-mongoose.connect('mongodb+srv://PierrotC:ky8DtCSUG1dZv5LQ@cluster0.n0f7a.mongodb.net/?retryWrites=true&w=majority',
+mongoose.connect(URI,
     {
         useNewUrlParser: true,
         useUnifiedTopology: true
@@ -18,7 +19,7 @@ mongoose.connect('mongodb+srv://PierrotC:ky8DtCSUG1dZv5LQ@cluster0.n0f7a.mongodb
 .then(() => console.log('MongoDB connected successfully!'))
 .catch(() => console.log('Failed to connect to MongoDB...'));
 
-app.use(bodyParser.json());
+app.use(express.json());
 app.use(helmet({
     crossOriginResourcePolicy: false
 }));
